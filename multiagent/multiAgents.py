@@ -74,6 +74,9 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
+        # Evitando fantasmas!
+        print(successorGameState.getPacmanPosition())
+
         "*** YOUR CODE HERE ***"
         return successorGameState.getScore()
 
