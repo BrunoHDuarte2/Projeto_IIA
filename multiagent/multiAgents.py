@@ -104,7 +104,7 @@ class ReflexAgent(Agent):
             if proxDistance<melhorDist:
                 melhorDist = proxDistance
                 melhorMove = act
-        """# Evitando fantasmas!
+        # Evitando fantasmas!
         # Distância entre o fantasma e o pacman
         pacmanPos_x, pacmanPos_y = currentGameState.getPacmanPosition()
         ghostPos = currentGameState.getGhostPositions()
@@ -129,7 +129,7 @@ class ReflexAgent(Agent):
                     proxDistance = min(distances)
                 if distanciaGhostMaisPerto<proxDistance:
                     melhorMove = act
-        print("Ação a ser tomada: ", melhorMove)"""
+        print("Ação a ser tomada: ", melhorMove)
         successorGameState.generatePacmanSuccessor(melhorMove)
 
         "*** YOUR CODE HERE ***"
