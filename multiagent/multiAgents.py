@@ -69,13 +69,15 @@ class ReflexAgent(Agent):
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
-        successorGameState = currentGameState.generatePacmanSuccessor(action)
-        newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
+        #successorGameState = currentGameState.generatePacmanSuccessor(action)
+        #newPos = successorGameState.getPacmanPosition()
+        #newFood = successorGameState.getFood()
+        #newGhostStates = successorGameState.getGhostStates()
+        #newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        
+        
         melhorMove = None
+        
         # Comida
         mapaComida = currentGameState.getFood()
         comidas = []
@@ -83,55 +85,65 @@ class ReflexAgent(Agent):
             for y, boolean in enumerate(linha):
                 if boolean == True:
                     comidas.append((x, y))
-        pacman_x, pacman_y = currentGameState.getPacmanPosition()
         
+        pacman_x, pacman_y = currentGameState.getPacmanPosition()
         listaDistanciaComida = [math.sqrt(((x-pacman_x)**2+(y-(pacman_y+1))**2)) for (x, y) in comidas]
-        valorMin = min(listaDistanciaComida)
-        index = listaDistanciaComida.index(valorMin)
+        menorDistanciaComida = min(listaDistanciaComida)
+        index = listaDistanciaComida.index(menorDistanciaComida)
         food_x, food_y = comidas[index]
-    
+
+        print("------------------------------------")
+        print("Pacman Pos: ", (pacman_x, pacman_y))
+        print("Comidas: ", comidas)
+        print("Comida mais perto: ", (food_x, food_y))
+
         actions = currentGameState.getLegalPacmanActions()
-        melhorDist = None
+        print(actions)
         for act in actions:
             if act == "North":
                 proxDistance = math.sqrt(((food_x-pacman_x)**2+(food_y-pacman_y+1)**2))
+                print("Dist Norte: ", proxDistance)
             if act == "South":
                 proxDistance = math.sqrt(((food_x-pacman_x)**2+(food_y-pacman_y-1)**2)) 
+                print("Dist sul: ", proxDistance)
             if act == "West":
                 proxDistance = math.sqrt(((food_x-(pacman_x-1))**2+(food_y-pacman_y)**2)) 
+                print("Dist west: ", proxDistance)
             if act == "East":
                 proxDistance = math.sqrt(((food_x-(pacman_x+1))**2+(food_y-pacman_y)**2))
-            if proxDistance<melhorDist:
-                melhorDist = proxDistance
+                print("Dist east: ", proxDistance)
+            if act == "Stop":
+                proxDistance = min(listaDistanciaComida)
+            if proxDistance<menorDistanciaComida:
+                menorDistanciaComida = proxDistance
                 melhorMove = act
+
+        print(melhorMove)
         # Evitando fantasmas!
         # Distância entre o fantasma e o pacman
-        pacmanPos_x, pacmanPos_y = currentGameState.getPacmanPosition()
         ghostPos = currentGameState.getGhostPositions()
-        distances = [math.sqrt(((x-pacmanPos_x)**2+(y-pacmanPos_y)**2)) for (x, y) in ghostPos]
-        if any(d < 3 for d in distances):
+        print("Ghost: ",ghostPos)
+        distGhosts = [math.sqrt(((x-pacman_x)**2+(y-pacman_y)**2)) for (x, y) in ghostPos]
+        if any(d < 3 for d in distGhosts):
             actions = currentGameState.getLegalPacmanActions()
-            melhorMove = None
-            distanciaGhostMaisPerto = min(distances)
+            distanciaGhostMaisPerto = min(distGhosts)
             # Minimizar a distância entre o PacMan e o fantasma
             for act in actions:
-                proxPosicaoPacman_x = pacmanPos_x
-                proxPosicaoPacman_y = pacmanPos_y
                 if act == "North":
-                    proxDistance = min([math.sqrt(((x-proxPosicaoPacman_x)**2+(y-(proxPosicaoPacman_y+1))**2)) for (x, y) in ghostPos])         
+                    proxDistance = min([math.sqrt(((x-pacman_x)**2+(y-(pacman_y+1))**2)) for (x, y) in ghostPos])         
                 if act == "South":
-                    proxDistance = min([math.sqrt(((x-proxPosicaoPacman_x)**2+(y-(proxPosicaoPacman_y-1))**2)) for (x, y) in ghostPos])
+                    proxDistance = min([math.sqrt(((x-pacman_x)**2+(y-(pacman_y-1))**2)) for (x, y) in ghostPos])
                 if act == "West":
-                    proxDistance = min([math.sqrt(((x-(proxPosicaoPacman_x-1))**2+(y-proxPosicaoPacman_y)**2)) for (x, y) in ghostPos])
+                    proxDistance = min([math.sqrt(((x-(pacman_x-1))**2+(y-pacman_y)**2)) for (x, y) in ghostPos])
                 if act == "East":
-                    proxDistance = min([math.sqrt(((x-(proxPosicaoPacman_x+1))**2+(y-proxPosicaoPacman_y)**2)) for (x, y) in ghostPos])
+                    proxDistance = min([math.sqrt(((x-(pacman_x+1))**2+(y-pacman_y)**2)) for (x, y) in ghostPos])
                 if act == "Stop":
-                    proxDistance = min(distances)
+                    proxDistance = min(distGhosts)
                 if distanciaGhostMaisPerto<proxDistance:
+                    distanciaGhostMaisPerto = proxDistance
                     melhorMove = act
-        print("Ação a ser tomada: ", melhorMove)
-        successorGameState.generatePacmanSuccessor(melhorMove)
-
+        print(melhorMove)
+        successorGameState = currentGameState.generatePacmanSuccessor(melhorMove)
         "*** YOUR CODE HERE ***"
         return successorGameState.getScore()
 
