@@ -70,8 +70,10 @@ class ReflexAgent(Agent):
         Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
         """
+
+        # FUnção feita pelo Bruno
         # Comida
-        if action == "Stop":
+        """"if action == "Stop":
             score = float("-inf")
             return score
         mapaComida = currentGameState.getFood()
@@ -127,7 +129,61 @@ class ReflexAgent(Agent):
         
         print("Score: ",score)
         print("Ação Associada: ", action)
+        """
+        ## Função evaluation feita pelo Ricardo
+        # Useful information you can extract from a GameState (pacman.py)
+        successorGameState = currentGameState.generatePacmanSuccessor(action)
+        newPos = successorGameState.getPacmanPosition()
+        #newFood = successorGameState.getFood()
+        #newGhostStates = successorGameState.getGhostStates()
+        #newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+        pacman_x, pacman_y = currentGameState.getPacmanPosition()
+        print(f'\n---XXX---XXX---\nPacman (X, Y) = ({pacman_x}, {pacman_y})')
+        next_x, next_y = newPos
+        print(f'Next Pacman (X, Y) = ({next_x}, {next_y}) - Action: {action}')
+
+        def pitagoras(A, B):
+             return math.sqrt((A**2) + (B**2))
+        
+        # Comida
+        mapaComida = currentGameState.getFood()
+        comidas = []
+        for x, linha in enumerate(mapaComida):
+            for y, boolean in enumerate(linha):
+                if boolean == True:
+                    comidas.append((x, y))
+        
+        pacman_x, pacman_y = currentGameState.getPacmanPosition()
+        
+        listaDistanciaComida = [math.sqrt(((x-pacman_x)**2+(y-(pacman_y+1))**2)) for (x, y) in comidas]
+        valorMin = min(listaDistanciaComida)
+        index = listaDistanciaComida.index(valorMin)
+        food_x, food_y = comidas[index] #Encontra as coordenadas da comida mais próxima
+        dist_melhor_comida = pitagoras(next_x-food_x, next_y-food_y)
+
+
+        ghostPos = currentGameState.getGhostPositions()
+        ghostDist = []
+        
+        for ghost in ghostPos:
+
+            ghostDist.append(pitagoras(newPos[0] - ghost[0], newPos[1] - ghost[1]))
+
+        menor_ghostDist = min(ghostDist)
+        emergencia = 0.8
+        if menor_ghostDist <= 2:
+            emergencia = 0.01
+        elif menor_ghostDist <= 5:
+            emergencia = 0.4
+
+        score = (400/(dist_melhor_comida+0.9)) * (menor_ghostDist*emergencia)
+        print(f'Distancia até melhor comida: {dist_melhor_comida}({food_x}, {food_y})\nDistancia do fantasma mais perto: {menor_ghostDist}')
+
+
         return score
+    
+        
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
