@@ -244,6 +244,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+
+        print(self.depth)
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
