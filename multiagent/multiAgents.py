@@ -244,10 +244,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        
+        return self.minimax(gameState, 0, 0)[0]    
 
-        print(self.depth)
-        util.raiseNotDefined()
-
+    def minimax(self, gameState: GameState, profundidade, agente):
+        
+        if gameState.isLose() or gameState.isWin() or self.depth == profundidade or gameState.getLegalActions(agente) == 0:
+            tuplaRetornada = (None, self.evaluationFunction(gameState))
+            return tuplaRetornada
+        valueForMax = float("-inf")
+        
+        # Ref: tupla (Ação, Valor)
+        if agente == 0:  # Pacman
+            for act in gameState.getLegalActions(agente):
+                tuplaMinimax = self.minimax(gameState.generateSuccessor(agente, act), profundidade, agente+1)
+                action, minimaxValue = tuplaMinimax
+                if (valueForMax<minimaxValue):
+                    valueForMax=minimaxValue
+                    minimaxAction = act
+            print("Action: ", minimaxAction)
+            print("Value: ",valueForMax)
+            print("Tupla Minimax: ", tuplaMinimax)
+        if valueForMax!= float("-inf"):
+            tuplaRetornada = (minimaxAction, valueForMax)
+            return tuplaRetornada
+        if agente != 0: # Fantasma
+            print("Fantasma", agente)
+            valueForMin = float("inf")
+            for act in gameState.getLegalActions(agente):
+                if agente<gameState.getNumAgents()-1:
+                    tuplaMinimax = self.minimax(gameState.generateSuccessor(agente, act), profundidade,agente+1)
+                else:
+                    tuplaMinimax = self.minimax(gameState.generateSuccessor(agente, act), profundidade+1, 0)
+                print("Tupla Minimax: ", tuplaMinimax) 
+                (action, minimaxValue) = tuplaMinimax
+                if (valueForMin>minimaxValue):
+                    valueForMin=minimaxValue
+                    minimaxAction = act
+                print("Action: ", minimaxAction)
+                print("Value: ",valueForMin)
+        if valueForMin!=float("inf"):
+            tuplaRetornada = (minimaxAction, valueForMin)
+            return tuplaRetornada
+                
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
