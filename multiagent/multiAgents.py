@@ -356,7 +356,46 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.expectimax(gameState, 0, 0)[0]    
+
+    def expectimax(self, gameState: GameState, profundidade, agente):
+        
+        if gameState.isLose() or gameState.isWin() or self.depth == profundidade or gameState.getLegalActions(agente) == 0:
+            tuplaRetornada = (None, self.evaluationFunction(gameState))
+            return tuplaRetornada
+        valueForMax = float("-inf")
+        
+        # Ref: tupla (Ação, Valor)
+        if agente == 0:  # Pacman
+            for act in gameState.getLegalActions(agente):
+                tuplaMinimax = self.expectimax(gameState.generateSuccessor(agente, act), profundidade, agente+1)
+                action, minimaxValue = tuplaMinimax
+                if (valueForMax<minimaxValue):
+                    valueForMax=minimaxValue
+                    minimaxAction = act
+            #print("Action: ", minimaxAction)
+            #print("Value: ",valueForMax)
+            #print("Tupla Minimax: ", tuplaMinimax)
+        if valueForMax!= float("-inf"):
+            tuplaRetornada = (minimaxAction, valueForMax)
+            return tuplaRetornada
+        if agente != 0: # Fantasma
+            print("Fantasma", agente)
+            expectimaxValue = 0
+            acoes = gameState.getLegalActions(agente)
+            for act in acoes:
+                if agente<gameState.getNumAgents()-1:
+                    tuplaMinimax = self.expectimax(gameState.generateSuccessor(agente, act), profundidade,agente+1)
+                else:
+                    tuplaMinimax = self.expectimax(gameState.generateSuccessor(agente, act), profundidade+1, 0)
+
+                expectimaxValue += tuplaMinimax[1]
+
+            expectimaxValue /= len(acoes)
+            tuplaExpectimax = ("Unknown", expectimaxValue)
+
+            print("Tupla Expectimax: ", tuplaExpectimax)
+            return tuplaExpectimax
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
