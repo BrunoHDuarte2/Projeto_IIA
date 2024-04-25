@@ -380,7 +380,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             tuplaRetornada = (minimaxAction, valueForMax)
             return tuplaRetornada
         if agente != 0: # Fantasma
-            print("Fantasma", agente)
+            #print("Fantasma", agente)
             expectimaxValue = 0
             acoes = gameState.getLegalActions(agente)
             for act in acoes:
@@ -394,7 +394,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             expectimaxValue /= len(acoes)
             tuplaExpectimax = ("Unknown", expectimaxValue)
 
-            print("Tupla Expectimax: ", tuplaExpectimax)
+            #print("Tupla Expectimax: ", tuplaExpectimax)
             return tuplaExpectimax
 
 def betterEvaluationFunction(currentGameState: GameState):
@@ -404,8 +404,56 @@ def betterEvaluationFunction(currentGameState: GameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    ghostPos = currentGameState.getGhostPositions()
+    pacman_x, pacman_y = currentGameState.getPacmanPosition()
+    comidas = currentGameState.getFood().asList()
+    capsulas = currentGameState.getCapsules()
+    
+    ghostDists = []
+    comidasDists = []
+    capsulasDists = []
+    meuScore = currentGameState.getScore()
+
+    if currentGameState.hasWall(pacman_x, pacman_y):
+            score -= 20
+    
+    for ghost in ghostPos:
+        d = abs(pacman_x - ghost[0]) + abs(pacman_y - ghost[1])
+        ghostDists.append(d)
+
+    closeGhost = min(ghostDists)
+    closeGhostIndex = ghostDists.index(closeGhost)
+    ghostState = currentGameState.getGhostStates()[closeGhostIndex]
+    if closeGhost < 2 and ghostState.scaredTimer <= 0:
+        meuScore -= 10/(closeGhost+0.01)
+    elif closeGhost > 8:
+        meuScore -= 10/(closeGhost+0.01)
+
+
+    for capsule in capsulas:
+        d = abs(pacman_x - capsule[0]) + abs(pacman_y - capsule[1])
+        capsulasDists.append(d)
+
+    if capsulasDists:
+        closeCapsula = min(capsulasDists)
+        if closeCapsula < 5 and closeGhost < 5 and ghostState.scaredTimer <= 0:
+            meuScore += 50*(1/(closeCapsula+0.01) + closeGhost)
+
+    
+    if ghostState.scaredTimer > 0:
+        meuScore += 400/(closeGhost+0.01)
+
+    
+    for comida in comidas:
+        d = abs(pacman_x - comida[0]) + abs(pacman_y - comida[1])
+        comidasDists.append(d)
+
+    if comidasDists:
+        meuScore -= min(comidasDists)
+
+    return meuScore
+    
 
 # Abbreviation
 better = betterEvaluationFunction
