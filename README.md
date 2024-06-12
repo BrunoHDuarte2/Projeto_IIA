@@ -1,9 +1,9 @@
 
-### Trabalho de Inteligência Artificial - Jogo do Pacman
+## Trabalho de Inteligência Artificial - Jogo do Pacman
 Este repositório contém o código do projeto de Inteligência Artificial aplicado ao jogo Pacman. O projeto é um trabalho desenvolvido pela Universidade de Berkeley e tem como objetivo a implementação de diferentes algoritmos de IA para controlar o comportamento do Pacman.
 
-### Algoritmos Implementados
-#Agente Reflexivo:
+## Algoritmos Implementados
+# Agente Reflexivo:
 
 Este agente toma decisões com base em regras simples que avaliam o estado atual do jogo.
 Avalia ações possíveis e escolhe aquela que resulta na melhor pontuação imediata.
